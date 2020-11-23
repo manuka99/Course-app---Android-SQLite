@@ -1,13 +1,21 @@
 package com.lab.finallab.ui;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +33,7 @@ public class Student extends AppCompatActivity {
     TextView welcomeText;
     MessagesRecycler messagesRecycler;
     DBHandler dbHandler;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +56,8 @@ public class Student extends AppCompatActivity {
         }
 
         List<Message> messages = dbHandler.getMessages();
+
+        //recycler view
         messagesRecycler = new MessagesRecycler(this, messages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()){
             @Override
@@ -55,5 +66,17 @@ public class Student extends AppCompatActivity {
             }
         });
         recyclerView.setAdapter(messagesRecycler);
+
+        String[] msgArray = new String[messages.size()];
+        int i = 0;
+        for(Message message: messages){
+            msgArray[i] = message.getSubject();
+            ++i;
+        }
+
+        //list view
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, msgArray);
+        listView = findViewById(R.id.listView);
+        listView.setAdapter(arrayAdapter);
     }
 }

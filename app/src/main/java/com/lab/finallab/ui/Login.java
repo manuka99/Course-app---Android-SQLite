@@ -1,7 +1,11 @@
 package com.lab.finallab.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.lab.finallab.MainActivity;
 import com.lab.finallab.R;
 import com.lab.finallab.database.DBHandler;
 import com.lab.finallab.database.UserMaster;
@@ -85,9 +90,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     .putLong(LOG_USER_EXPIRE_TIME, date.getTime() + time_day_ms)
                     .apply();
 
-            if(type.equals(UserMaster.User.TYPE_STUDENT))
-            startActivity(new Intent(getApplicationContext(), Student.class));
-
+            if(type.equals(UserMaster.User.TYPE_STUDENT)) {
+                startActivity(new Intent(getApplicationContext(), Student.class));
+                sendMsgNotification();
+            }
             else if(type.equals(UserMaster.User.TYPE_TEACHER))
                     startActivity(new Intent(getApplicationContext(), Teacher.class));
 
@@ -102,6 +108,28 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     private void funRegister() {
         startActivity(new Intent(getApplicationContext(), Register.class));
+    }
+
+    private void sendMsgNotification(){
+        //explicit intent
+        Intent new_intent = new Intent(this, Message.class);
+        new_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        new_intent.putExtra(Message.NEW_MESSAGE, true);
+
+        //pending intent
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 54545, new_intent, 0);
+
+        //build notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), MainActivity.CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setContentTitle("New Message")
+                .setContentText("You have a new message...click to view message")
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        //sent notification
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        notificationManagerCompat.notify(1, builder.build());
     }
 
 }

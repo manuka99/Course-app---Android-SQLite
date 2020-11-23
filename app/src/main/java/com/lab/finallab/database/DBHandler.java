@@ -137,4 +137,18 @@ public class DBHandler extends SQLiteOpenHelper {
         return message;
     }
 
+    public Message getLatestMessage() {
+        Message message = new Message();
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+        Cursor cursor = sqLiteDatabase.query(MessageMaster.Message.TABLE_NAME, new String[]{MessageMaster.Message._ID, MessageMaster.Message.USER_ID, MessageMaster.Message.SUBJECT, MessageMaster.Message.MESSAGE},
+                null, null, null, null, MessageMaster.Message._ID + " DESC", " 1 ");
+        if (cursor.moveToFirst()) {
+            message.set_id(cursor.getString(0));
+            message.setUser_ID(cursor.getString(1));
+            message.setSubject(cursor.getString(2));
+            message.setMessage(cursor.getString(3));
+        }
+        return message;
+    }
+
 }

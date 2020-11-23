@@ -13,6 +13,7 @@ public class Message extends AppCompatActivity {
 
     private static final String TAG = "Message";
     public static final String MESSAGE_ID = "message_id";
+    public static final String NEW_MESSAGE = "new_message";
 
     DBHandler dbHandler;
     TextView subject, message;
@@ -29,6 +30,15 @@ public class Message extends AppCompatActivity {
 
         if (getIntent().hasExtra(MESSAGE_ID)) {
             com.lab.finallab.model.Message message_db = dbHandler.getMessage(getIntent().getStringExtra(MESSAGE_ID));
+            if (message_db.get_id() == null) {
+                Toast.makeText(this, "Message does not exist", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                subject.setText(message_db.getSubject());
+                message.setText(message_db.getMessage());
+            }
+        } else if (getIntent().hasExtra(NEW_MESSAGE)) {
+            com.lab.finallab.model.Message message_db = dbHandler.getLatestMessage();
             if (message_db.get_id() == null) {
                 Toast.makeText(this, "Message does not exist", Toast.LENGTH_SHORT).show();
                 finish();
